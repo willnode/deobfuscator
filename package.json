@@ -1,0 +1,19 @@
+{
+  "name": "deobfuscator",
+  "scripts": {
+    "test": "webpack -p",
+    "serve": "simplehttpserver dist",
+    "watch": "webpack --watch"
+  },
+  "dependencies": {
+    "js-beautify": "^1.8.9"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^1.0.0",
+    "monaco-editor": "^0.14.3",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2"
+  }
+}

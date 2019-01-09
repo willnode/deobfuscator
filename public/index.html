@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<style>
+	body {
+		height: 100vh;
+		margin: 0px;
+	}
+	#container {
+		width: 100%;
+		height: calc(100vh - 60px)
+	}
+	#navbar {
+		display: flex;
+	}
+	button {
+		background-color: white;
+		padding: 5px 10px;
+		margin: 0px 5px;
+		border: 1px solid black;
+		cursor: pointer;
+	}
+	button:hover {
+		background-color: gainsboro;
+	}
+</style>
+</head>
+<body>
+
+<div id="navbar">
+	<button onclick="evalStr()">Eval</button>
+	<button onclick="evalSelectiveStr()">Eval Selective</button>
+	<button onclick="expandBracket()">Expand Bracket</button>
+	<button onclick="setReplaceVariable()">Variable Replace</button>
+	<button onclick="beautify()">Format</button>
+	<button onclick="normalizeAccess()">Normalize Access</button>
+	<span style="flex-grow:1"></span>
+	<button onclick="gotoRepo()">Help</button>
+</div>
+<div id="container"></div>
+
+<script src="./app.bundle.js"></script>
+
+</body>
+</html>
