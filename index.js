@@ -73,7 +73,7 @@ window.expandBracket = function() {
 	editor.getAction('editor.action.selectToBracket').run()
 }
 
-window.setReplaceVariable = function () {
+window.arraySubtitution = function () {
 	var txt = utils.selectedText;
 	var valname = /([_\w\d]+)\s*=\s*$/.exec(utils.text.substring(0, utils.startSelection))[1]
 	var obj = eval(txt)
@@ -94,7 +94,11 @@ window.beautify = function() {
 	utils.text = beautify(utils.text, {indent_size: 2});
 }
 
-window.normalizeAccess = function() {
+window.simplifyAccess = function() {
 	utils.selectAllIfNone();
 	utils.selectedText = utils.selectedText.replace(/\["([\w_][\w\d_]*?)"\]/g, ".$1");
+}
+
+window.gotoRepo = function() {
+	window.open('https://github.com/willnode/deobfuscator', '_blank');
 }
