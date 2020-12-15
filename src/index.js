@@ -24,6 +24,19 @@ editor.getModel().onDidChangeContent(() => {
   sessionStorage["decoder-text"] = utils.text;
 });
 
+function colName(n) {
+  var ordA = "a".charCodeAt(0);
+  var ordZ = "z".charCodeAt(0);
+  var len = ordZ - ordA + 1;
+
+  var s = "";
+  while (n >= 0) {
+    s = String.fromCharCode((n % len) + ordA) + s;
+    n = Math.floor(n / len) - 1;
+  }
+  return s;
+}
+
 const utils = {
   get selectedText() {
     return editor.getModel().getValueInRange(editor.getSelection());
@@ -105,7 +118,7 @@ window.evalPop = function () {
 
 window.evalAuto = function () {
   utils.selectAllIfNone();
-  var r = /(?:^|;)\s*(?:var|const|let)\s+(_0x[0-9a-fA-F]+)/gm,
+  var r = /(?:^|;)\s*(?:var|const|let)\s+(\w+)/gm,
     w,
     v = [],
     text = utils.selectedText;
@@ -155,15 +168,22 @@ window.simplifyString = function () {
   utils.selectedText = replaced;
 };
 
+window.simplifyNumber = function () {
+  utils.selectAllIfNone();
+  var replaced = utils.selectedText.replace(
+    /\b0x[a-fA-F0-9]+\b/g,
+    function (m) {
+      return JSON.stringify(eval(m));
+    }
+  );
+  utils.selectedText = replaced;
+};
+
 window.simplifyAccess = function () {
   utils.selectAllIfNone();
-  utils.selectedText = utils.selectedText.replace(
-    /\["([\w_][\w\d_]*?)"\]/g,
-    ".$1"
-  ).replace(
-    /\['([\w_][\w\d_]*?)'\]/g,
-    ".$1"
-  );
+  utils.selectedText = utils.selectedText
+    .replace(/\["([\w_][\w\d_]*?)"\]/g, ".$1")
+    .replace(/\['([\w_][\w\d_]*?)'\]/g, ".$1");
 };
 
 window.simplifyVar = function () {
@@ -172,9 +192,27 @@ window.simplifyVar = function () {
 };
 
 window.simplifyHex = function () {
-	utils.selectAllIfNone();
-	console.log("Coming Soon!");
-  };
+  utils.selectAllIfNone();
+  var letters = {};
+  var letc = 0;
+  var s = utils.selectedText;
+  var replaced = s.replace(/\b_0x[a-fA-F0-9]+\b/g, function (m) {
+    if (letters[m]) return letters[m];
+    else {
+      var x;
+      while ((x = colName(letc++)))
+        if (!s.match(new RegExp("\\b" + x + "\\b", "i")))
+          if (
+            !["do", "if", "in", "for", "let", "new", "var", "try"].includes(x)
+          )
+            break;
+
+      letters[m] = x;
+      return x;
+    }
+  });
+  utils.selectedText = replaced;
+};
 
 window.gotoRepo = function () {
   window.open("https://github.com/willnode/deobfuscator", "_blank");
