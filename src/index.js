@@ -1,11 +1,11 @@
 import * as monaco from 'monaco-editor';
-import * as beautify from 'js-beautify';
+import beautify from 'js-beautify';
 
 console.log(process.env.NODE_ENV);
 
 self.MonacoEnvironment = {
 	getWorkerUrl: function (moduleId, label) {
-		return './ts.worker.bundle.js';
+		return './ts.worker.js';
 	}
 }
 
@@ -20,7 +20,7 @@ const editor = monaco.editor.create(document.getElementById('container'), {
 	automaticLayout: true,
 });
 
-editor.model.onDidChangeContent(() => {
+editor.getModel().onDidChangeContent(() => {
 	sessionStorage['decoder-text'] = utils.text;
 });
 
@@ -64,6 +64,8 @@ window.evalStr = function() {
 window.evalSelectiveStr = function() {
 	utils.selectAllIfNone();
 	var replaced = utils.selectedText.replace(/"(\\"|[^"])*?"/g, function(m) {
+		return JSON.stringify(eval(m))
+	}).replace(/'(\\"|[^'])*?'/g, function(m) {
 		return JSON.stringify(eval(m))
 	});
 	utils.selectedText = replaced

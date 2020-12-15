@@ -1,8 +1,9 @@
 {
   "name": "deobfuscator",
   "scripts": {
-    "test": "parcel build ./src/index.html",
-    "start": "parcel serve ./src/index.html"
+    "build-worker": "parcel build ./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js",
+    "test": "npm run build-worker && parcel build ./src/index.html",
+    "start": "npm run build-worker && parcel serve ./src/index.html"
   },
   "dependencies": {
     "js-beautify": "^1.13.0",
