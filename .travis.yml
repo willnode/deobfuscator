@@ -4,9 +4,8 @@ node_js:
 cache: npm
 deploy:
   provider: pages
-  skip-cleanup: true
-  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
-  local-dir: dist
-  target-branch: gh-pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  local_dir: dist
   on:
     branch: master

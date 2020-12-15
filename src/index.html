@@ -5,16 +5,23 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<title>Javascript Deobfuscator</title>
 <style>
+	* {
+		box-sizing: border-box;
+	}
 	body {
 		height: 100vh;
 		margin: 0px;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 	#container {
-		width: 100%;
-		height: calc(100vh - 60px)
+		flex-grow: 1;
 	}
 	#navbar {
+		padding: 2px 8px;
 		display: flex;
+		align-items: center;
 	}
 	button {
 		background-color: white;
@@ -31,14 +38,23 @@
 <body>
 
 <div id="navbar">
-	<button onclick="evalStr()">Eval</button>
-	<button onclick="evalSelectiveStr()">Eval Strings</button>
-	<button onclick="expandBracket()">Expand Bracket</button>
-	<button onclick="arraySubtitution()">Array Subtitution</button>
-	<button onclick="simplifyAccess()">Simplify Access</button>
-	<button onclick="beautify()">Format</button>
+	<span>Formatting Tools:&nbsp;</span>
+	<button onclick="beautify()">Format Document</button>
+	<button onclick="simplifyString()">Simplify String</button>
+	<button onclick="simplifyAccess()">Simplify Object Access</button>
+	<button onclick="simplifyHex()">Simplify Hex Name</button>
+	<button onclick="simplifyVar()">Simplify Variable</button>
 	<span style="flex-grow:1"></span>
 	<button onclick="gotoRepo()">Help</button>
+</div>
+<div id="navbar">
+	<span>Evaluating Tools:&nbsp;</span>
+	<button onclick="evalPush()">Push</button>
+	<button onclick="evalPop()">Pop</button>
+	<button onclick="evalStr()">Eval Selected</button>
+	<button onclick="evalAuto()">Auto Eval</button>
+	<span style="flex-grow:1"></span>
+	<span>(Open developer tools for useful information)</span>
 </div>
 <div id="container"></div>
 
