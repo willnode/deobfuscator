@@ -1,8 +1,8 @@
 {
   "name": "deobfuscator",
   "scripts": {
-    "build-worker": "parcel build ./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js",
-    "test": "npm run build-worker && parcel build ./src/index.html",
+    "build-worker": "parcel build ./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js --no-source-maps",
+    "test": "npm run build-worker && parcel build ./src/index.html --public-url . --no-source-maps",
     "start": "npm run build-worker && parcel serve ./src/index.html"
   },
   "dependencies": {
