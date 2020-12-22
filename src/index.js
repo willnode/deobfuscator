@@ -179,6 +179,39 @@ window.simplifyNumber = function () {
   utils.selectedText = replaced;
 };
 
+window.simplifyNumberExp = function () {
+  utils.selectAllIfNone();
+  var replaced = utils.selectedText.replace(
+    /(\b|-)[-+* \d\.]+\d\b/g,
+    function (m) {
+      try {
+        var r = eval(m);
+        return typeof r == "number" ? JSON.stringify(r) : m;
+      } catch (error) {
+        return m;
+      }
+    }
+  );
+  utils.selectedText = replaced;
+};
+
+
+window.simplifyStringExp = function () {
+  utils.selectAllIfNone();
+  var replaced = utils.selectedText.replace(
+    /"[\w" \+]+"/g,
+    function (m) {
+      try {
+        var r = eval(m);
+        return typeof r == "string" ? JSON.stringify(r) : m;
+      } catch (error) {
+        return m;
+      }
+    }
+  );
+  utils.selectedText = replaced;
+};
+
 window.simplifyAccess = function () {
   utils.selectAllIfNone();
   utils.selectedText = utils.selectedText
