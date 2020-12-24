@@ -99,6 +99,21 @@ window.evalStr = function () {
   }
 };
 
+window.evalBareStr = function () {
+  if (window.stackEval.length > 0) {
+    utils.selectedText = String(
+      eval(`
+			(function(){
+				${stackEval.slice(-1)[0]}
+				return ${utils.selectedText};
+			})();
+		`)
+    );
+  } else {
+    utils.selectedText = String(eval("(" + utils.selectedText + ")"));
+  }
+}
+
 window.evalPush = function () {
   if (utils.startSelection != utils.endSelection) {
     window.stackEval.push(
@@ -221,6 +236,7 @@ window.simplifyAccess = function () {
 
 window.simplifyVar = function () {
   utils.selectAllIfNone();
+  // This function dissasemble var chain. Can't figure save way to do it yet.
   console.log("Coming Soon!");
 };
 
