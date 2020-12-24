@@ -2,7 +2,7 @@
 
 Need to edit an obfuscated Javascript? This repo is the way to de-obfuscate any kind of obfuscated Javascript, especially if it comes from automatic tools like https://obfuscator.io/.
 
-The process is not automatic, but the tools should be enough.
+Because obfuscation varies wildly in the internet, the process is not automatic. It won't give you one-click-and-it-done but instead it gives you a script editor with tools necessary to deobfucate any kind of javascript (provided you also familiar with how JS works of course).
 
 Your work is automatically saved to SessionStorage so don't worry about accidental refresh or page navigation.
 
@@ -65,7 +65,7 @@ var foo = {'baz' => 'bar'};
 var result = foo['baz'];
 ```
 
-If you push the first line to stack and then `evalStr` the text `foo['baz']`, it will replaced as `bar`.
+If you push the first line to stack and then `evalStr` the text `foo['baz']`, it will replaced as `"bar"`.
 
 #### Eval Auto `evalAuto()`
 
