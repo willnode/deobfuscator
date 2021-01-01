@@ -24,6 +24,59 @@ editor.getModel().onDidChangeContent(() => {
   sessionStorage["decoder-text"] = utils.text;
 });
 
+editor.addAction({
+  id: "evaluate-selected",
+  label: "Evaluate Selected",
+  keybindings: [monaco.KeyCode.F10],
+  run: function () {
+    window.evalStr();
+  },
+});
+
+editor.addAction({
+  id: "evaluate-auto",
+  label: "Auto Eval",
+  keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10],
+  run: function () {
+    window.evalAuto();
+  },
+});
+
+editor.addAction({
+  id: "object-access",
+  label: "Object Access",
+  keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F9],
+  run: function () {
+    window.simplifyAccess();
+  },
+});
+
+editor.addAction({
+  id: "split-var",
+  label: "Split Var",
+  keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F8],
+  run: function () {
+    window.splitVar();
+  },
+});
+editor.addAction({
+  id: "eval-push",
+  label: "Eval Push",
+  keybindings: [monaco.KeyCode.F9],
+  run: function () {
+    window.evalPush();
+  },
+});
+
+editor.addAction({
+  id: "eval-pop",
+  label: "Eval Pop",
+  keybindings: [monaco.KeyCode.F8],
+  run: function () {
+    window.evalPop();
+  },
+});
+
 function colName(n) {
   var ordA = "a".charCodeAt(0);
   var ordZ = "z".charCodeAt(0);
@@ -84,6 +137,10 @@ window.utils = utils;
 
 window.stackEval = [];
 
+window.expandBracket = function () {
+  editor.getAction("editor.action.selectToBracket").run();
+};
+
 window.evalStr = function () {
   if (window.stackEval.length > 0) {
     utils.selectedText = JSON.stringify(
@@ -112,7 +169,7 @@ window.evalBareStr = function () {
   } else {
     utils.selectedText = String(eval("(" + utils.selectedText + ")"));
   }
-}
+};
 
 window.evalPush = function () {
   if (utils.startSelection != utils.endSelection) {
@@ -125,6 +182,7 @@ window.evalPush = function () {
     console.log("Nothing selected");
   }
 };
+
 window.evalPop = function () {
   window.stackEval.pop();
   console.log("stackEval popped, current evaluation:");
@@ -142,7 +200,7 @@ window.evalAuto = function () {
   console.log(v);
   v.forEach((t) => {
     text = text.replace(
-      new RegExp(t + "(\\[.+?\\]|\\(.+?\\)|\\b)", "g"),
+      new RegExp(t + "(\\.\\w+)?(\\[.+?\\]|\\(.+?\\)|\\b)", "g"),
       function (token) {
         try {
           var result = eval(`
@@ -151,7 +209,7 @@ window.evalAuto = function () {
 				return ${token};
 			})();
 		`);
-          if (typeof result == "string" || typeof result == "number") {
+          if (typeof result == "string" || typeof result == "number" || typeof result == "boolean") {
             return JSON.stringify(result);
           } else {
             return token;
@@ -163,6 +221,32 @@ window.evalAuto = function () {
     );
   });
   utils.selectedText = text;
+};
+
+window.evalAutoRegex = function (regex, outf) {
+  utils.selectAllIfNone();
+  var replaced = utils.selectedText.replace(r, function (o) {
+    try {
+      var result = outf.apply(null, arguments);
+      if (typeof result == "string" || typeof result == "number") return result;
+      else return o;
+    } catch (e) {
+      return o;
+    }
+  });
+  utils.selectedText = replaced;
+};
+
+window.splitVar = function () {
+  var text = utils.selectedText;
+  var text2 = text;
+  do {
+    text = text2;
+    text2 = text.replace(/var(.+?),\n(\s+)/gs, function (all, exp, s) {
+      return "var" + exp + ";\n" + s + "var ";
+    });
+  } while (text2 != text);
+  utils.selectedText = text2;
 };
 
 /* Formatting Tools */
@@ -197,7 +281,7 @@ window.simplifyNumber = function () {
 window.simplifyNumberExp = function () {
   utils.selectAllIfNone();
   var replaced = utils.selectedText.replace(
-    /(\b|-)[-+* \d\.]+\d\b/g,
+    /(\b|-)(-?[\d\.]+ ?[-*+/%^] ?)+(-?[\d\.]+)\b/g,
     function (m) {
       try {
         var r = eval(m);
@@ -210,28 +294,24 @@ window.simplifyNumberExp = function () {
   utils.selectedText = replaced;
 };
 
-
 window.simplifyStringExp = function () {
   utils.selectAllIfNone();
-  var replaced = utils.selectedText.replace(
-    /"[\w" \+]+"/g,
-    function (m) {
-      try {
-        var r = eval(m);
-        return typeof r == "string" ? JSON.stringify(r) : m;
-      } catch (error) {
-        return m;
-      }
+  var replaced = utils.selectedText.replace(/"[\w" \+]+"/g, function (m) {
+    try {
+      var r = eval(m);
+      return typeof r == "string" ? JSON.stringify(r) : m;
+    } catch (error) {
+      return m;
     }
-  );
+  });
   utils.selectedText = replaced;
 };
 
 window.simplifyAccess = function () {
   utils.selectAllIfNone();
   utils.selectedText = utils.selectedText
-    .replace(/\["([\w_][\w\d_]*?)"\]/g, ".$1")
-    .replace(/\['([\w_][\w\d_]*?)'\]/g, ".$1");
+    .replace(/\["([\w][\w\d_]*?)"\]/g, ".$1")
+    .replace(/\['([\w][\w\d_]*?)'\]/g, ".$1");
 };
 
 window.simplifyVar = function () {
