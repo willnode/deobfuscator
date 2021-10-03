@@ -123,8 +123,16 @@ const utils = {
     return editor.getValue();
   },
   set text(v) {
-    editor.setValue(v);
-  },
+    // Select all text
+    const fullRange = editor.getModel().getFullModelRange();
+
+    // Apply the text over the range
+    editor.executeEdits(null, [{
+        text: v,
+        range: fullRange
+      }]);
+  }
+  ,
   selectAllIfNone() {
     if (this.startSelection == this.endSelection) {
       editor.setSelection(editor.getModel().getFullModelRange());
@@ -139,6 +147,42 @@ window.stackEval = [];
 
 window.expandBracket = function () {
   editor.getAction("editor.action.selectToBracket").run();
+};
+
+
+window.syncVar = function () {
+  var thevar = utils.selectedText;
+  var text = utils.text;
+  if (thevar.indexOf(" ") !== -1) {
+    alert('Not a valid var!');
+    return;
+  }
+  var text2 = text;
+  while (true) {
+    text2 = syncVarNested(thevar, text);
+    if (text !== text2)
+      text = text2;
+    else
+      break;
+  }
+  utils.text = text2;
+};
+
+
+window.syncVarNested = function (thevar, text) {
+  var r = new RegExp(`\\b(var|let|const) (\\w+) += +${thevar}(;|,\\n)`, "g");
+  var alternates = [];
+  var t = text.replace(r, function (m, p1, p2, sep) {
+    alternates.push(p2);
+    return  sep === ',\n' ? p1 : ``;
+  });
+  alternates = alternates.filter((v, i, a) => a.indexOf(v) === i)
+  console.log(alternates);
+  alternates.forEach(w => {
+    t = t.replace(new RegExp(`\\b${w}\\b`, "g"), thevar);
+    t = window.syncVarNested(w, t);
+  });
+  return t;
 };
 
 window.evalStr = function () {
@@ -237,16 +281,35 @@ window.evalAutoRegex = function (regex, outf) {
   utils.selectedText = replaced;
 };
 
+function splitNested(str) {
+  let result = [], item = '', depth = 0;
+
+  function push() { if (item) result.push(item); item = ''; }
+
+  for (let i = 0, c; c = str[i], i < str.length; i++) {
+    if (!depth && c === ',') push();
+    else {
+      item += c;
+      if (c === '[') depth++;
+      if (c === ']') depth--;
+      if (c === '{') depth++;
+      if (c === '}') depth--;
+      if (c === '(') depth++;
+      if (c === ')') depth--;
+    }
+  }
+
+  push();
+  return result;
+}
+
 window.splitVar = function () {
   var text = utils.selectedText;
-  var text2 = text;
-  do {
-    text = text2;
-    text2 = text.replace(/var(.+?),\n(\s+)/gs, function (all, exp, s) {
-      return "var" + exp + ";\n" + s + "var ";
-    });
-  } while (text2 != text);
-  utils.selectedText = text2;
+  utils.selectedText = text.replace(/^(\s*)(var|let|const)\s+(.+?);/gsm, function (all, space, met, exp) {
+    // assume nice formatted
+    var vars = splitNested(exp);
+    return vars.map(x => `${space}${met} ${x.trim()};\n`).join("");
+  });
 };
 
 /* Formatting Tools */
