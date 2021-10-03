@@ -73,6 +73,11 @@ Harnessing the power of regex, this "intelligently" replaces any "captured" vari
 
 The captured variables are based on the current stack. It will detect all `var`/`const`/`let`. If the evaluation returns string or number, it will be replaced.
 
+
+#### Sync Vars `syncVar()`
+
+Select a word variable and any derived variable names will be magically recusively replaced. Example select `foo` and then `let bar = foo; let baz = bar; console.log(baz)` will simply become `console.log(foo)`. Combined with `evalAuto` both are destructive yet very time saving operation.
+
 ## Hidden Evaluation Tools
 
 These tools are experimental. Although it's useful in certain cases. To access it you need to call the function in browser console.
@@ -88,5 +93,10 @@ Similar like `simplifyString`, but also merges string concatenation (e.g. `"foo"
 #### `simplifyNumberExp`
 
 Similar like `simplifyNumber`, but also merges number operations (e.g. `-1 + 2`). Because it's flexibility, it only detect regular number. Proceed with caution.
+
+#### `splitVar`
+
+Split two or more concatenated `const`/`let`/`var` definitions in a selected single expression. It does not simply naively replace `,`, it's aware about array/object presence. Because of that you can't just select multiple functions and expect it gots the effect too. Still kinda useful for readability.
+
 
 Feel free to requests other operation ideas in Issue Tracker.

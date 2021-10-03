@@ -7,8 +7,10 @@
   },
   "dependencies": {
     "js-beautify": "^1.13.0",
-    "monaco-editor": "^0.21.2",
+    "monaco-editor": "^0.21.2"
+  },
+  "devDependencies": {
     "parcel-bundler": "^1.12.5"
   },
-  "devDependencies": {}
+  "license": "MIT"
 }
