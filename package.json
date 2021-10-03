@@ -7,9 +7,8 @@
   },
   "dependencies": {
     "js-beautify": "^1.13.0",
-    "monaco-editor": "^0.21.2"
+    "monaco-editor": "^0.21.2",
+    "parcel-bundler": "^1.12.5"
   },
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.1"
-  }
+  "devDependencies": {}
 }
