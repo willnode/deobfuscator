@@ -6,8 +6,8 @@
     "start": "npm run build-worker && parcel serve ./src/index.html"
   },
   "dependencies": {
-    "js-beautify": "^1.13.0",
-    "monaco-editor": "^0.21.2"
+    "js-beautify": "^1.14.0",
+    "monaco-editor": "^0.28.1"
   },
   "devDependencies": {
     "parcel-bundler": "^1.12.5"

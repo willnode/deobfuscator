@@ -20,6 +20,9 @@ const editor = monaco.editor.create(document.getElementById("container"), {
   automaticLayout: true,
 });
 
+window.monaco = monaco;
+window.editor = editor;
+
 editor.getModel().onDidChangeContent(() => {
   sessionStorage["decoder-text"] = utils.text;
 });
