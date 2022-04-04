@@ -1,4 +1,5 @@
 import * as monaco from "monaco-editor";
+import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import beautify from "js-beautify";
 
 console.log(process.env.NODE_ENV);
@@ -6,8 +7,8 @@ console.log(process.env.NODE_ENV);
 /* Editor Initialization */
 
 self.MonacoEnvironment = {
-  getWorkerUrl: function (moduleId, label) {
-    return "./ts.worker.js";
+  getWorker: function () {
+    return new tsWorker();
   },
 };
 

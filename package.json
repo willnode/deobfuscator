@@ -1,16 +1,16 @@
 {
   "name": "deobfuscator",
   "scripts": {
-    "build-worker": "parcel build ./node_modules/monaco-editor/esm/vs/language/typescript/ts.worker.js --no-source-maps",
-    "test": "npm run build-worker && parcel build ./src/index.html --public-url . --no-source-maps",
-    "start": "npm run build-worker && parcel serve ./src/index.html"
+    "start": "vite serve src",
+    "build": "vite build src --base=./ --outDir ../dist",
+    "preview": "vite preview"
   },
   "dependencies": {
     "js-beautify": "^1.14.0",
     "monaco-editor": "^0.28.1"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.5"
+    "vite": "^2.9.1"
   },
   "license": "MIT"
 }
