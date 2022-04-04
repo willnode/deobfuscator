@@ -15,7 +15,7 @@ self.MonacoEnvironment = {
 const editor = monaco.editor.create(document.getElementById("container"), {
   value:
     sessionStorage["decoder-text"] ||
-    ["function x() {", '\tconsole.log("Hello world!");', "}"].join("\n"),
+    [`function x() {`, `\tconsole['log']("Hello world!");`, `}`].join("\n"),
   language: "javascript",
   wordWrap: "on",
   automaticLayout: true,
