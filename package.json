@@ -1,16 +1,17 @@
 {
   "name": "deobfuscator",
   "scripts": {
-    "start": "vite serve src",
-    "build": "vite build src --base=./ --outDir ../dist",
+    "start": "vite serve",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "js-beautify": "^1.14.0",
-    "monaco-editor": "^0.33.0"
+    "js-beautify": "^1.14.8",
+    "monaco-editor": "^0.39.0"
   },
   "devDependencies": {
-    "vite": "^2.9.16"
+    "@types/js-beautify": "^1.13.3",
+    "vite": "^4.3.9"
   },
   "license": "MIT"
 }
