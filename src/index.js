@@ -1,4 +1,5 @@
-import { editor as monacoEditor, KeyCode, KeyMod, Range } from "monaco-editor";
+import * as monaco from "monaco-editor";
+import {KeyCode, KeyMod } from "monaco-editor";
 import tsWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
 import "./tools.js";
 
@@ -10,7 +11,7 @@ self.MonacoEnvironment = {
   },
 };
 
-const editor = monacoEditor.create(document.getElementById("container"), {
+const editor = monaco.editor.create(document.getElementById("container"), {
   value:
     sessionStorage["decoder-text"] ||
     [`function x() {`, `\tconsole['log']("Hello world!");`, `}`].join("\n"),
@@ -84,7 +85,7 @@ const utils = {
     var model = editor.getModel();
     var ops = selectionList.map((selection, i) => {
       var text = model.getValueInRange(selection);
-      var range = new Range(
+      var range = new monaco.Range(
         selection.startLineNumber,
         selection.startColumn,
         selection.endLineNumber,
@@ -106,7 +107,7 @@ const utils = {
   },
   set selectedText(text) {
     var selection = editor.getSelection();
-    var range = new Range(
+    var range = new monaco.Range(
       selection.startLineNumber,
       selection.startColumn,
       selection.endLineNumber,
@@ -141,13 +142,30 @@ const utils = {
       text: v,
       range: fullRange
     }]);
-  }
-  ,
+  },
   selectAllIfNone() {
     if (this.startSelection == this.endSelection) {
       editor.setSelection(editor.getModel().getFullModelRange());
     }
   },
+  rangeFromOffset(start, end) {
+    var model = editor.getModel();
+    var start = model.getPositionAt(start);
+    var end = model.getPositionAt(end);
+    return new monaco.Selection(
+      start.lineNumber,
+      start.column,
+      end.lineNumber,
+      end.column
+    );
+  },
+  /**
+   * 
+   * @param {Selection[]} rangeList 
+   */
+  selectRangeList(rangeList) {
+    editor.setSelections(rangeList);
+  }
 };
 
 window.utils = utils;

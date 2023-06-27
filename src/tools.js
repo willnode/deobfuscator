@@ -1,4 +1,5 @@
 import beautify from "js-beautify";
+import { Range } from "monaco-editor";
 
 window.stackEval = [];
 
@@ -16,10 +17,60 @@ function colName(n) {
   return s;
 }
 
+function isBracketEven(str) {
+  var count = 0;
+  for (var i = 0; i < str.length; i++) {
+    if (str[i] === "(") count++;
+    else if (str[i] === ")") count--;
+    else if (str[i] === "[") count++;
+    else if (str[i] === "]") count--;
+    else if (str[i] === "{") count++;
+    else if (str[i] === "}") count--;
+  }
+  return count === 0;
+}
+
 window.expandBracket = function () {
   editor.getAction("editor.action.selectToBracket").run();
 };
 
+
+
+window.selectAllVarDeclaration = function () {
+  var text = utils.text;
+  var r = /^\s*(var|let|const) [\w\W]+?(;\n|function|=>)/gm;
+  var ranges = [];
+
+  var m;
+  while ((m = r.exec(text)) !== null) {
+    var start = m.index;
+    var end = start + m[0].length;
+    if (isBracketEven(m[0]) && m[0].endsWith(";\n")) {
+      ranges.push(utils.rangeFromOffset(start, end));
+    }
+  }
+  utils.selectRangeList(ranges);
+};
+
+window.subtituteAllVarAssigment = function () {
+  var fulltext = utils.text;
+  utils.transformSelection(function (text) {
+    // must be single var
+    var r = /^(\s*var |\s*let |\s*const )(\w+)(;\s*)/gm;
+    var m = r.exec(text);
+    if (m) {
+      var varname = m[2];
+      var r2 = new RegExp(`(,|^)\\s*${varname}( = .+?)(,|;)`, "gm");
+      var m2 = r2.exec(fulltext);
+      if (m2) {        
+        return m[1] + m[2] + m2[2] + m[3];
+      }
+    }
+    else {
+      return text;
+    }
+  });
+}
 
 window.syncVar = function () {
   var thevar = utils.selectedText;
@@ -41,11 +92,11 @@ window.syncVar = function () {
 
 
 window.syncVarNested = function (thevar, text) {
-  var r = new RegExp(`\\b(var|let|const) (\\w+) += +${thevar}(;|,\\n)`, "g");
+  var r = new RegExp(`^ *(var|let|const)? +(\\w+) += +${thevar}(;|,\\n)`, "gm");
   var alternates = [];
-  var t = text.replace(r, function (m, p1, p2, sep) {
+  var t = text.replace(r, function (_, p1, p2, sep) {
     alternates.push(p2);
-    return sep === ',\n' ? p1 : ``;
+    return ``;
   });
   alternates = alternates.filter((v, i, a) => a.indexOf(v) === i)
   console.log(alternates);
@@ -185,11 +236,12 @@ function splitNested(str) {
 }
 
 window.splitVar = function () {
-  var text = utils.selectedText;
-  utils.selectedText = text.replace(/^(\s*)(var|let|const)\s+(.+?);/gsm, function (all, space, met, exp) {
-    // assume nice formatted
-    var vars = splitNested(exp);
-    return vars.map(x => `${space}${met} ${x.trim()};\n`).join("");
+  utils.transformSelection(function (text) {
+    return text.replace(/^(\s*)(var|let|const)\s+(.+?);/gsm, function (all, space, met, exp) {
+      // assume nice formatted
+      var vars = splitNested(exp);
+      return vars.map(x => `${space}${met} ${x.trim()};\n`).join("");
+    });
   });
 };
 
