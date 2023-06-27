@@ -2,7 +2,7 @@
   "name": "deobfuscator",
   "scripts": {
     "start": "vite serve",
-    "build": "vite build",
+    "build": "vite build --base=./",
     "preview": "vite preview"
   },
   "dependencies": {
