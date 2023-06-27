@@ -45,7 +45,7 @@ window.syncVarNested = function (thevar, text) {
   var alternates = [];
   var t = text.replace(r, function (m, p1, p2, sep) {
     alternates.push(p2);
-    return  sep === ',\n' ? p1 : ``;
+    return sep === ',\n' ? p1 : ``;
   });
   alternates = alternates.filter((v, i, a) => a.indexOf(v) === i)
   console.log(alternates);
@@ -57,33 +57,43 @@ window.syncVarNested = function (thevar, text) {
 };
 
 window.evalStr = function () {
-  if (window.stackEval.length > 0) {
-    utils.selectedText = JSON.stringify(
-      eval(`
-			(function(){
-				${stackEval.slice(-1)[0]}
-				return ${utils.selectedText};
-			})();
-		`)
-    );
-  } else {
-    utils.selectedText = JSON.stringify(eval("(" + utils.selectedText + ")"));
-  }
+  utils.transformSelection(function (text) {
+    try {
+      if (window.stackEval.length > 0) {
+        return JSON.stringify(eval(`
+          (function(){
+            ${stackEval.slice(-1)[0]}
+            return ${text};
+          })();
+        `));
+      } else {
+        return JSON.stringify(eval("(" + text + ")"));
+      }
+    } catch (error) {
+      console.error(error);
+      return text;
+    }
+  });
 };
 
 window.evalBareStr = function () {
-  if (window.stackEval.length > 0) {
-    utils.selectedText = String(
-      eval(`
-			(function(){
-				${stackEval.slice(-1)[0]}
-				return ${utils.selectedText};
-			})();
-		`)
-    );
-  } else {
-    utils.selectedText = String(eval("(" + utils.selectedText + ")"));
-  }
+  utils.transformSelection(function (text) {
+    try {
+      if (window.stackEval.length > 0) {
+        return String(eval(`
+          (function(){
+            ${stackEval.slice(-1)[0]}
+            return ${text};
+          })();
+        `));
+      } else {
+        return String(eval("(" + text + ")"));
+      }
+    } catch (error) {
+      console.error(error);
+      return text;
+    }
+  });
 };
 
 window.evalPush = function () {

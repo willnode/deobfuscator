@@ -79,6 +79,28 @@ editor.addAction({
 });
 
 const utils = {
+  transformSelection(f) {
+    var selectionList = editor.getSelections();
+    var model = editor.getModel();
+    var ops = selectionList.map((selection, i) => {
+      var text = model.getValueInRange(selection);
+      var range = new Range(
+        selection.startLineNumber,
+        selection.startColumn,
+        selection.endLineNumber,
+        selection.endColumn
+      );
+      var identifier = { major: 1, minor: i + 1 };
+      var op = {
+        range,
+        identifier,
+        text: f(text),
+        forceMoveMarkers: true,
+      };
+      return op;
+    });
+    editor.executeEdits("my-source", ops);
+  },
   get selectedText() {
     return editor.getModel().getValueInRange(editor.getSelection());
   },
@@ -116,9 +138,9 @@ const utils = {
 
     // Apply the text over the range
     editor.executeEdits(null, [{
-        text: v,
-        range: fullRange
-      }]);
+      text: v,
+      range: fullRange
+    }]);
   }
   ,
   selectAllIfNone() {
@@ -127,4 +149,5 @@ const utils = {
     }
   },
 };
+
 window.utils = utils;
