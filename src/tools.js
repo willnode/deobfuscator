@@ -107,18 +107,24 @@ window.syncVarNested = function (thevar, text) {
   return t;
 };
 
+function stringify(obj) {
+  if (typeof obj == "function") return obj.toString();
+  else if (obj === undefined) throw new Error("returned undefined");
+  else return JSON.stringify(obj);
+}
+
 window.evalStr = function () {
   utils.transformSelection(function (text) {
     try {
       if (window.stackEval.length > 0) {
-        return JSON.stringify(eval(`
+        return stringify(eval(`
           (function(){
             ${stackEval.slice(-1)[0]}
             return ${text};
           })();
         `));
       } else {
-        return JSON.stringify(eval("(" + text + ")"));
+        return stringify(eval("(" + text + ")"));
       }
     } catch (error) {
       console.error(error);
@@ -176,7 +182,7 @@ window.evalAuto = function () {
   console.log(v);
   v.forEach((t) => {
     text = text.replace(
-      new RegExp(t + "(\\.\\w+)?(\\[.+?\\]|\\(.+?\\)|\\b)", "g"),
+      new RegExp("\b" + t + "(\\.\\w+)?(\\[.+?\\]|\\(.+?\\)|\\b)", "g"),
       function (token) {
         try {
           var result = eval(`
@@ -185,7 +191,7 @@ window.evalAuto = function () {
 				return ${token};
 			})();
 		`);
-          if (typeof result == "string" || typeof result == "number" || typeof result == "boolean") {
+          if (typeof result == "string" || typeof result == "number" || typeof result == "boolean" || result === null) {
             return JSON.stringify(result);
           } else {
             return token;
